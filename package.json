@@ -1,0 +1,53 @@
+{
+  "name": "express-booter",
+  "version": "0.1.0",
+  "description": "Express routes booter and middlewares",
+  "main": "src/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development node src/index.js",
+    "watch": "cross-env NODE_ENV=development nodemon -w src -e tj,json src/index.js",
+    "test": "cross-env NODE_ENV=test mocha 'tests/**/*.spec.js'",
+    "format": "prettier --write \"{src,tests}/**/*.{js,json}\"",
+    "lint": "eslint \"src/**/*.js\" \"tests/**/*.js\"",
+    "pretest": "npm run lint",
+    "start": "cross-env NODE_ENV=production node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/seancheung/express-booter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seancheung/express-booter/issues"
+  },
+  "homepage": "https://github.com/seancheung/express-booter#readme",
+  "keywords": [
+    "express",
+    "route",
+    "router",
+    "boot",
+    "guard",
+    "middleware",
+    "pagination",
+    "auth",
+    "validation"
+  ],
+  "author": "seancheung <theoxuanx@gmail.com> (https://seanz.me)",
+  "license": "MIT",
+  "dependencies": {
+    "cross-env": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.0",
+    "body-parser": "^1.18.3",
+    "eslint": "^5.9.0",
+    "express": "^4.16.4",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.4",
+    "prettier": "^1.15.2",
+    "supertest": "^3.3.0"
+  },
+  "peerDependencies": {
+    "express": "^4.0"
+  }
+}
