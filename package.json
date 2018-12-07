@@ -1,6 +1,6 @@
 {
   "name": "express-booter",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Express routes booter and middlewares",
   "main": "src/index.js",
   "types": "index.d.ts",

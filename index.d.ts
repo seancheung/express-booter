@@ -253,6 +253,20 @@ declare namespace booter {
      */
     function headers(array: string[]): RequestHandler;
     /**
+     * Check required field exists in request params
+     *
+     * @param map Required fields map with key being the field key and value being the hint value, validator or field option
+     * @throws {errors.BadRequest} xxx missing in header
+     */
+    function params(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
+    /**
+     * Check required field exists in request params
+     *
+     * @param array Required fields array
+     * @throws {errors.BadRequest} xxx missing in header
+     */
+    function params(array: string[]): RequestHandler;
+    /**
      * Success if current running NODE_ENV maches any
      *
      * @param envs Envs to match against
