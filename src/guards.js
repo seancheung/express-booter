@@ -4,9 +4,13 @@ const { BadRequest, Forbidden, Unauthorized } = require('./errors');
  * Check required fields in context
  *
  * @param {string} context
- * @param {{[key: string]: string}} map
+ * @param {{[key: string]: string}|string[]} map
  */
 function required(context, map) {
+  if (Array.isArray(map)) {
+    map = map.reduce((t, k) => Object.assign(t, { [k]: k }), {});
+  }
+
   return (req, res, next) => {
     try {
       if (!req[context]) {

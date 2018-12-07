@@ -81,6 +81,7 @@ module.exports = {
 ```javascript
 const { guards } = require('express-booter');
 // Check required field exists in request body
+router.use(guards.body(['name', 'type']));
 router.use(guards.body(map));
 // Check required field exists in request query strings
 router.use(guards.queries(map));

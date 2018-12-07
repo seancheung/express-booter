@@ -2,7 +2,7 @@ const guards = require('../../src/guards');
 
 module.exports = {
   middlewares: [
-    guards.headers({ 'X-ID': 'X-ID' }),
+    guards.headers(['X-ID']),
     guards.auth({
       expand(req) {
         return { id: req.header('x-id') };
@@ -29,7 +29,7 @@ module.exports = {
   get: {
     name: '/:id',
     method: 'get',
-    middlewares: [guards.queries({ code: 'code' })],
+    middlewares: [guards.queries(['code'])],
     handler(req, res) {
       res.json({ id: req.params.id, code: req.query.code });
     }
