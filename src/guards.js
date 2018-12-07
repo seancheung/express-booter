@@ -62,6 +62,10 @@ function headers(map) {
   return required('header', map);
 }
 
+function params(map) {
+  return required('params', map);
+}
+
 function env(...envs) {
   return (req, res, next) => {
     try {
@@ -248,6 +252,7 @@ module.exports = {
   body,
   queries,
   headers,
+  params,
   env,
   auth,
   pagination,

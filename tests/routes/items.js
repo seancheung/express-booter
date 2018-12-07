@@ -29,7 +29,7 @@ module.exports = {
   get: {
     name: '/:id',
     method: 'get',
-    middlewares: [guards.queries(['code'])],
+    middlewares: [guards.queries(['code']), guards.params({ id: val => !isNaN(val) })],
     handler(req, res) {
       res.json({ id: req.params.id, code: req.query.code });
     }

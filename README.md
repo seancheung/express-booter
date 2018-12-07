@@ -80,7 +80,7 @@ module.exports = {
 
 ```javascript
 const { guards } = require('express-booter');
-// Check required field exists in request body
+// Validate fielda in request body
 router.use(guards.body(['name', 'type']));
 router.use(guards.body({ name: '名字', type: '类型' }));
 router.use(guards.body({ name: data => data.length > 5 }));
@@ -94,10 +94,12 @@ router.use(
     name: { validator: data => data.length > 5, message: 'Name must contain at least 5 characters' }
   })
 );
-// Check required field exists in request query strings
+// Validate fields in request query strings
 router.use(guards.queries(options));
-// Check required field exists in request headers
+// Validate fields in request headers
 router.use(guards.headers(options));
+// Validate fields in request parameters
+router.use(guards.params(options));
 // Success if current running NODE_ENV maches any
 router.use(guards.env('development', 'test'));
 // Extract user entity from request

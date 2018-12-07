@@ -58,6 +58,23 @@ describe('guards test', function() {
       .expect(200, { id: '1', code: '12345' });
   });
 
+  it('expect params guard to work', async function() {
+    await request(this.app)
+      .get('/items/abc')
+      .set('x-id', '123')
+      .query({ code: 12345 })
+      .expect(400, {
+        name: 'BadRequest',
+        status: 400,
+        message: 'invalid id in params'
+      });
+    await request(this.app)
+      .get('/items/1')
+      .set('x-id', '123')
+      .query({ code: 12345 })
+      .expect(200, { id: '1', code: '12345' });
+  });
+
   it('expect body guard to work', async function() {
     await request(this.app)
       .post('/items')
