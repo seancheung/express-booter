@@ -51,7 +51,7 @@ declare namespace booter {
    * @param router Router
    * @param options Options
    */
-  function boot(dir: string, router: IRouter, options?: boot.Options): Router;
+  function boot<T extends IRouter<any>>(dir: string, router: T, options?: boot.Options): T;
   namespace boot {
     interface Options {
       /**
@@ -199,13 +199,24 @@ declare namespace booter {
        */
       secret: string;
     }
+    type Validator<T> = (data: T) => boolean;
+    interface FieldOptions {
+      /**
+       * Custom validator
+       */
+      validator?: Validator<string>;
+      /**
+       * Custom error message
+       */
+      message?: string;
+    }
     /**
      * Check required field exists in request body
      *
-     * @param map Required fields map with key being the field key and value being the hint value
+     * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in body
      */
-    function body(map: Map<string, string>): RequestHandler;
+    function body(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
     /**
      * Check required field exists in request body
      *
@@ -216,10 +227,10 @@ declare namespace booter {
     /**
      * Check required field exists in request query strings
      *
-     * @param map Required fields map with key being the field key and value being the hint value
+     * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in query
      */
-    function queries(map: Map<string, string>): RequestHandler;
+    function queries(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
     /**
      * Check required field exists in request query strings
      *
@@ -230,10 +241,10 @@ declare namespace booter {
     /**
      * Check required field exists in request headers
      *
-     * @param map Required fields map with key being the field key and value being the hint value
+     * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in header
      */
-    function headers(map: Map<string, string>): RequestHandler;
+    function headers(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
     /**
      * Check required field exists in request headers
      *

@@ -8,7 +8,11 @@ describe('guards test', function() {
   it('expect headers guard to work', async function() {
     await request(this.app)
       .get('/items/count')
-      .expect(400, { status: 400, name: 'BadRequest', message: 'X-ID missing in header' });
+      .expect(400, {
+        status: 400,
+        name: 'BadRequest',
+        message: 'X-ID is required but missing in header'
+      });
   });
 
   it('expect auth guard to work', async function() {
@@ -42,7 +46,11 @@ describe('guards test', function() {
     await request(this.app)
       .get('/items/1')
       .set('x-id', '123')
-      .expect(400, { name: 'BadRequest', status: 400, message: 'code missing in query' });
+      .expect(400, {
+        name: 'BadRequest',
+        status: 400,
+        message: 'code is required but missing in query'
+      });
     await request(this.app)
       .get('/items/1')
       .set('x-id', '123')
@@ -57,12 +65,30 @@ describe('guards test', function() {
       .expect(400, {
         name: 'BadRequest',
         status: 400,
-        message: 'item name,item key missing in body'
+        message: 'item name is required but missing in body'
+      });
+    await request(this.app)
+      .post('/items')
+      .set('x-id', '123')
+      .send({ name: 'abc', key: '12345' })
+      .expect(400, {
+        name: 'BadRequest',
+        status: 400,
+        message: 'invalid key in body'
       });
     await request(this.app)
       .post('/items')
       .set('x-id', '123')
       .send({ name: 'abc', key: 12345 })
+      .expect(400, {
+        name: 'BadRequest',
+        status: 400,
+        message: 'type is required'
+      });
+    await request(this.app)
+      .post('/items')
+      .set('x-id', '123')
+      .send({ name: 'abc', key: 12345, type: 'custom' })
       .expect(201, { name: 'abc', key: 12345 });
   });
 

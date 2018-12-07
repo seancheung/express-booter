@@ -82,11 +82,22 @@ module.exports = {
 const { guards } = require('express-booter');
 // Check required field exists in request body
 router.use(guards.body(['name', 'type']));
-router.use(guards.body(map));
+router.use(guards.body({ name: '名字', type: '类型' }));
+router.use(guards.body({ name: data => data.length > 5 }));
+router.use(
+  guards.body({
+    name: { message: 'Name cannot be empty' }
+  })
+);
+router.use(
+  guards.body({
+    name: { validator: data => data.length > 5, message: 'Name must contain at least 5 characters' }
+  })
+);
 // Check required field exists in request query strings
-router.use(guards.queries(map));
+router.use(guards.queries(options));
 // Check required field exists in request headers
-router.use(guards.headers(map));
+router.use(guards.headers(options));
 // Success if current running NODE_ENV maches any
 router.use(guards.env('development', 'test'));
 // Extract user entity from request

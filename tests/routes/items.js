@@ -38,7 +38,15 @@ module.exports = {
   create: {
     name: '/',
     method: 'post',
-    middlewares: [guards.body({ name: 'item name', key: 'item key' })],
+    middlewares: [
+      guards.body({
+        name: 'item name',
+        key: data => typeof data === 'number',
+        type: {
+          message: 'type is required'
+        }
+      })
+    ],
     handler(req, res) {
       res.status(201).json({ name: req.body.name, key: req.body.key });
     }

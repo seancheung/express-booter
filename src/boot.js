@@ -12,9 +12,6 @@ function wrap(handler) {
   };
 }
 
-/**
- * Import controllers
- */
 module.exports = (dir, router, options) => {
   const {
     filter = f => /\.js$/.test(f),

@@ -1,11 +1,5 @@
 const { BadRequest, Forbidden, Unauthorized } = require('./errors');
 
-/**
- * Check required fields in context
- *
- * @param {string} context
- * @param {{[key: string]: string}|string[]} map
- */
 function required(context, map) {
   if (Array.isArray(map)) {
     map = map.reduce((t, k) => Object.assign(t, { [k]: k }), {});
@@ -17,9 +11,37 @@ function required(context, map) {
         throw new BadRequest(`missing request ${context}`);
       }
       const get = typeof req[context] === 'function' ? k => req[context](k) : k => req[context][k];
-      const missing = Object.keys(map).filter(field => get(field) === undefined);
-      if (missing.length) {
-        throw new BadRequest(`${missing.map(field => map[field]).join()} missing in ${context}`);
+      for (const [k, v] of Object.entries(map)) {
+        if (typeof v === 'function') {
+          if (v(get(k))) {
+            continue;
+          }
+          throw new BadRequest(`invalid ${k} in ${context}`);
+        }
+        if (typeof v === 'object') {
+          if (v.validator) {
+            if (v.validator(get(k))) {
+              continue;
+            }
+            if (v.message) {
+              throw new BadRequest(v.message);
+            }
+            throw new BadRequest(`invalid ${k} in ${context}`);
+          }
+          if (get(k) !== undefined) {
+            continue;
+          }
+          if (v.message) {
+            throw new BadRequest(v.message);
+          }
+          throw new BadRequest(`${k} is required but missing in ${context}`);
+        }
+        if (get(k) === undefined) {
+          if (typeof v === 'string') {
+            throw new BadRequest(`${v} is required but missing in ${context}`);
+          }
+          throw new BadRequest(`${k} is required but missing in ${context}`);
+        }
       }
     } catch (error) {
       return next(error);
@@ -28,38 +50,18 @@ function required(context, map) {
   };
 }
 
-/**
- * Check required field exists in request body
- *
- * @param {{[key: string]: string}} map Required fields map with key being the field key and value being the hint value
- */
 function body(map) {
   return required('body', map);
 }
 
-/**
- * Check required field exists in request query strings
- *
- * @param {{[key: string]: string}} map Required fields map with key being the field key and value being the hint value
- */
 function queries(map) {
   return required('query', map);
 }
 
-/**
- * Check required field exists in request headers
- *
- * @param {{[key: string]: string}} map Required fields map with key being the field key and value being the hint value
- */
 function headers(map) {
   return required('header', map);
 }
 
-/**
- * Success if current running NODE_ENV maches any
- *
- * @param {string[]} envs Possible envs
- */
 function env(...envs) {
   return (req, res, next) => {
     try {
@@ -73,11 +75,6 @@ function env(...envs) {
   };
 }
 
-/**
- * Require authorization
- *
- * @param {{expand: (request: any) => any}} expander
- */
 function auth(expander) {
   return async (req, res, next) => {
     try {
