@@ -1,26 +1,57 @@
 /// <reference types="node" />
 /// <reference types="express" />
-import { Router, RequestHandler, Request } from 'express';
+import { IRouter, RequestHandler, Request } from 'express';
 
 declare global {
   namespace Express {
     interface Request {
+      /**
+       * Parsed query options
+       */
       $options?: QueryOptions;
+      /**
+       * Auth user
+       */
       $user?: any;
     }
     interface QueryOptions {
+      /**
+       * Parsed pagination skipped count
+       */
       offset?: number;
+      /**
+       * Parsed pagination page size
+       */
       limit?: number;
+      /**
+       * Current pagination index
+       */
       index?: number;
+      /**
+       * Parsed where query
+       */
       where?: any;
+      /**
+       * Parsed order query
+       */
       order?: any;
+      /**
+       * Parsed projection query
+       */
       select?: any;
     }
   }
 }
 
 declare namespace booter {
-  function boot(dir: string, router: Router, options?: boot.Options): Router;
+  /**
+   * Boot all routes from the given directory
+   *
+   * @param dir Routes directory
+   * @param router Router
+   * @param options Options
+   */
+  function boot(dir: string, router: IRouter, options?: boot.Options): Router;
   namespace boot {
     interface Options {
       /**
@@ -38,6 +69,9 @@ declare namespace booter {
       safe?: boolean;
     }
   }
+  /**
+   * HTTP Errors
+   */
   namespace errors {
     class HttpError {
       constructor(status: number, message?: string);
@@ -258,6 +292,29 @@ declare namespace booter {
      * @throws {errors.Unauthorized}
      */
     function access(options: guards.Access): RequestHandler;
+  }
+
+  /**
+   * Query helper
+   */
+  namespace query {
+    /**
+     * Apply query options to query function. You might need to call 'exec' on return value
+     *
+     * @param req Request
+     * @param queryFunc Query function. e.g. find, findOne, count, etc.
+     * @param context Context when calling queryFunc
+     */
+    function mongoose(req: Request, queryFunc: Function, context?: any): any;
+
+    /**
+     * Apply query options to query function
+     *
+     * @param req Request
+     * @param queryFunc Query function. e.g. findAll, findOne, count, etc.
+     * @param context Context when calling queryFunc
+     */
+    function sequelize(req: Request, queryFunc: Function, context?: any): any;
   }
 }
 

@@ -78,7 +78,7 @@ module.exports = (dir, router, options) => {
           router[method](url, handler);
         }
         if (typeof cb === 'function') {
-          cb.call(null, { method, url });
+          cb.call(null, { method: method.toUpperCase(), url });
         }
       });
     });
