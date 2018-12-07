@@ -1,5 +1,44 @@
 const { BadRequest, Forbidden, Unauthorized } = require('./errors');
 
+function check(value, type) {
+  if (typeof type === 'function') {
+    switch (type) {
+    case String:
+      return typeof value === 'string';
+    case Number:
+      return typeof value === 'number';
+    case Boolean:
+      return typeof value === 'boolean';
+    case Array:
+      return Array.isArray(value);
+    case Object:
+      return typeof value === 'object' && value != null;
+    default:
+      return type(value);
+    }
+  }
+  if (typeof type === 'object') {
+    if (type instanceof RegExp) {
+      return type.test(value);
+    }
+    if (Array.isArray(type)) {
+      if (!Array.isArray(value)) {
+        return false;
+      }
+      if (type.length === 1) {
+        return value.every(e => check(e, type[0]));
+      }
+      if (type.length > 1) {
+        return value.every((e, i) => type[i] && check(e, type[i]));
+      }
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function required(context, map) {
   if (Array.isArray(map)) {
     map = map.reduce((t, k) => Object.assign(t, { [k]: k }), {});
@@ -11,37 +50,36 @@ function required(context, map) {
         throw new BadRequest(`missing request ${context}`);
       }
       const get = typeof req[context] === 'function' ? k => req[context](k) : k => req[context][k];
-      for (const [k, v] of Object.entries(map)) {
-        if (typeof v === 'function') {
-          if (v(get(k))) {
+      for (const [key, type] of Object.entries(map)) {
+        const value = get(key);
+        if (typeof type === 'string') {
+          if (value !== undefined) {
             continue;
           }
-          throw new BadRequest(`invalid ${k} in ${context}`);
+          throw new BadRequest(`${type} is required but missing in ${context}`);
         }
-        if (typeof v === 'object') {
-          if (v.validator) {
-            if (v.validator(get(k))) {
+        if (type.validator || type.message !== undefined) {
+          if (type.validator) {
+            if (type.validator(value)) {
               continue;
             }
-            if (v.message) {
-              throw new BadRequest(v.message);
+            if (type.message !== undefined) {
+              throw new BadRequest(type.message);
             }
-            throw new BadRequest(`invalid ${k} in ${context}`);
+            throw new BadRequest(`invalid ${key} in ${context}`);
           }
-          if (get(k) !== undefined) {
+          if (value !== undefined) {
             continue;
           }
-          if (v.message) {
-            throw new BadRequest(v.message);
+          if (type.message !== undefined) {
+            throw new BadRequest(type.message);
           }
-          throw new BadRequest(`${k} is required but missing in ${context}`);
+          throw new BadRequest(`invalid ${key} in ${context}`);
         }
-        if (get(k) === undefined) {
-          if (typeof v === 'string') {
-            throw new BadRequest(`${v} is required but missing in ${context}`);
-          }
-          throw new BadRequest(`${k} is required but missing in ${context}`);
+        if (check(value, type)) {
+          continue;
         }
+        throw new BadRequest(`invalid ${key} in ${context}`);
       }
     } catch (error) {
       return next(error);

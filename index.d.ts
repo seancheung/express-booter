@@ -210,13 +210,24 @@ declare namespace booter {
        */
       message?: string;
     }
+
+    type ElementType = typeof String | typeof Number | typeof Boolean | typeof Object;
+
+    type FieldType =
+      | string
+      | ElementType
+      | RegExp
+      | typeof Array
+      | Array<ElementType>
+      | Validator<string>
+      | FieldOptions;
     /**
      * Check required field exists in request body
      *
      * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in body
      */
-    function body(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
+    function body(map: Map<string, FieldType>): RequestHandler;
     /**
      * Check required field exists in request body
      *
@@ -230,7 +241,7 @@ declare namespace booter {
      * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in query
      */
-    function queries(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
+    function queries(map: Map<string, FieldType>): RequestHandler;
     /**
      * Check required field exists in request query strings
      *
@@ -244,7 +255,7 @@ declare namespace booter {
      * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in header
      */
-    function headers(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
+    function headers(map: Map<string, FieldType>): RequestHandler;
     /**
      * Check required field exists in request headers
      *
@@ -258,7 +269,7 @@ declare namespace booter {
      * @param map Required fields map with key being the field key and value being the hint value, validator or field option
      * @throws {errors.BadRequest} xxx missing in header
      */
-    function params(map: Map<string, string | Validator<string> | FieldOptions>): RequestHandler;
+    function params(map: Map<string, FieldType>): RequestHandler;
     /**
      * Check required field exists in request params
      *

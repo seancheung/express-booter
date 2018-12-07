@@ -68,5 +68,24 @@ module.exports = {
     handler(req, res) {
       res.status(204).end();
     }
+  },
+
+  advanced: {
+    method: 'post',
+    middlewares: [
+      guards.body({
+        a: Number,
+        b: String,
+        c: Boolean,
+        d: Array,
+        e: Object,
+        f: /^__.+/,
+        g: [Number],
+        h: [String, Number]
+      })
+    ],
+    handler(req, res) {
+      res.status(204).end();
+    }
   }
 };

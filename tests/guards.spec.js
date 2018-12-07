@@ -109,6 +109,22 @@ describe('guards test', function() {
       .expect(201, { name: 'abc', key: 12345 });
   });
 
+  it('expect type guard to work', async function() {
+    await request(this.app)
+      .post('/items/advanced')
+      .set('x-id', '123')
+      .expect(400, {
+        name: 'BadRequest',
+        status: 400,
+        message: 'invalid a in body'
+      });
+    await request(this.app)
+      .post('/items/advanced')
+      .set('x-id', '123')
+      .send({ a: 1, b: '1', c: false, d: [], e: {}, f: '__haha', g: [1], h: ['abc', 123] })
+      .expect(204);
+  });
+
   it('expect access guard to work', async function() {
     const crypto = require('crypto');
     const namespace = 'TEST',
