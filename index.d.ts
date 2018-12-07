@@ -199,28 +199,31 @@ declare namespace booter {
        */
       secret: string;
     }
-    type Validator<T> = (data: T) => boolean;
+
+    type ValidatorFunc = (data: any) => boolean;
+    type Validator =
+      | typeof String
+      | typeof Number
+      | typeof Boolean
+      | typeof Object
+      | RegExp
+      | ValidatorFunc;
     interface FieldOptions {
       /**
        * Custom validator
        */
-      validator?: Validator<string>;
+      validator?: Validator;
       /**
        * Custom error message
        */
       message?: string;
+      /**
+       * Field can be omitted
+       */
+      optional?: boolean;
     }
 
-    type ElementType = typeof String | typeof Number | typeof Boolean | typeof Object;
-
-    type FieldType =
-      | string
-      | ElementType
-      | RegExp
-      | typeof Array
-      | Array<ElementType>
-      | Validator<string>
-      | FieldOptions;
+    type FieldType = string | Validator | typeof Array | Array<Validator> | FieldOptions;
     /**
      * Check required field exists in request body
      *

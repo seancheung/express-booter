@@ -59,8 +59,11 @@ function required(context, map) {
           throw new BadRequest(`${type} is required but missing in ${context}`);
         }
         if (type.validator || type.message !== undefined) {
+          if (type.optional && value === undefined) {
+            continue;
+          }
           if (type.validator) {
-            if (type.validator(value)) {
+            if (check(value, type.validator)) {
               continue;
             }
             if (type.message !== undefined) {
